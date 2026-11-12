@@ -461,7 +461,7 @@
   /* 12. Scientific material file */
 
   const materialFields = [
-    "chemical_name", "aliases", "cas", "inci", "definition", "botanical_source", "part_used", "extraction", "composition",
+    "chemical_name", "aliases", "definition", "botanical_source", "part_used", "extraction", "composition",
     "properties", "functions", "usage_levels", "solubility", "ph",
     "compatibility", "incompatibility", "processing", "storage",
     "safety", "references"
@@ -542,11 +542,6 @@
     }
     if (branch) links.appendChild(el("span", "", branch.name));
 
-    $$(".m-block").forEach(b => b.classList.remove("collapsed"));
-
-    const index = $("#m-index");
-    index.replaceChildren();
-
     materialFields.forEach(field => {
       const block = $(`[data-field="${field}"]`);
       const body = $(".m-body", block);
@@ -558,19 +553,12 @@
         return;
       }
       renderValue(body, value, field === "references");
-
-      const chip = el("button", "chip-btn", $("h2", block).textContent);
-      chip.type = "button";
-      chip.addEventListener("click", () =>
-        block.scrollIntoView({ behavior: "smooth", block: "start" }));
-      index.appendChild(chip);
     });
 
     // بطاقات المعلومات السريعة
     const facts = $("#m-facts");
     facts.replaceChildren();
-    [["CAS", material.cas, true], ["INCI", material.inci, true],
-     ["نسبة الاستخدام", material.usage_levels, false]]
+    [["CAS", material.cas, true], ["INCI", material.inci, true]]
       .filter(([, v]) => !isEmpty(v))
       .forEach(([label, value, ltr]) => {
         const box = el("div", "fact");
@@ -580,18 +568,8 @@
         facts.appendChild(box);
       });
     facts.hidden = !facts.children.length;
+    $("#m-cas-note").hidden = isEmpty(material.cas);
   }
-
-  // طيّ وفتح أقسام الملف العلمي بالضغط على العنوان
-  $$(".m-block h2").forEach(h => {
-    h.tabIndex = 0;
-    h.setAttribute("role", "button");
-    const toggle = () => h.parentElement.classList.toggle("collapsed");
-    h.addEventListener("click", toggle);
-    h.addEventListener("keydown", e => {
-      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); }
-    });
-  });
 
   /* 13. Search */
 
