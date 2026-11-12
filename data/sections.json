@@ -1,67 +1,15 @@
 [
-  {
-    "id": "oils-fats",
-    "name": "الزيوت والدهون",
-    "description": "الزيوت النباتية والزبدات والزيوت العطرية"
-  },
-  {
-    "id": "waxes-emulsifiers",
-    "name": "الشموع والمستحلبات",
-    "description": "الشموع المستحلبة والطبيعية ومواد الاستحلاب"
-  },
-  {
-    "id": "surfactants",
-    "name": "المنظفات والخافضات للتوتر السطحي",
-    "description": "المواد الفعالة سطحياً للتنظيف والاستحلاب"
-  },
-  {
-    "id": "emollients-humectants",
-    "name": "المرطبات والملطفات",
-    "description": "مواد ترطيب وتليين البشرة والشعر"
-  },
-  {
-    "id": "thickeners-stabilizers",
-    "name": "المكثفات والمثبتات",
-    "description": "مواد التكثيف والتثبيت وتكوين الجيل"
-  },
-  {
-    "id": "actives",
-    "name": "الأحماض والمواد الفعالة",
-    "description": "الأحماض والفيتامينات والببتيدات والمواد الفعالة"
-  },
-  {
-    "id": "botanical-extracts",
-    "name": "المستخلصات النباتية",
-    "description": "مستخلصات النباتات ومشتقاتها"
-  },
-  {
-    "id": "preservatives",
-    "name": "المواد الحافظة",
-    "description": "حافظات التركيبات ومضادات أكسدتها"
-  },
-  {
-    "id": "solvents-ph",
-    "name": "المذيبات وضابطات الحموضة",
-    "description": "المذيبات ومنظمات pH"
-  },
-  {
-    "id": "colorants",
-    "name": "الألوان والأصباغ",
-    "description": "الأصباغ والأكاسيد والميكا"
-  },
-  {
-    "id": "clays-exfoliants",
-    "name": "الأطيان والمقشرات",
-    "description": "الأطيان ومواد التقشير الفيزيائي"
-  },
-  {
-    "id": "sunscreens",
-    "name": "الفلاتر الشمسية",
-    "description": "فلاتر الأشعة فوق البنفسجية"
-  },
-  {
-    "id": "fragrance-flavor",
-    "name": "العطور والنكهات",
-    "description": "المركّبات العطرية والنكهات"
-  }
+  {"id": "oils-fats", "name": "الزيوت والدهون", "name_en": "Oils & Fats", "description": "الزيوت النباتية والزبدات والزيوت العطرية"},
+  {"id": "waxes-emulsifiers", "name": "الشموع والمستحلبات", "name_en": "Waxes & Emulsifiers", "description": "الشموع المستحلبة والطبيعية ومواد الاستحلاب"},
+  {"id": "surfactants", "name": "المنظفات والخافضات للتوتر السطحي", "name_en": "Surfactants", "description": "المواد الفعالة سطحياً للتنظيف والاستحلاب"},
+  {"id": "emollients-humectants", "name": "المرطبات والملطفات", "name_en": "Emollients & Humectants", "description": "مواد ترطيب وتليين البشرة والشعر"},
+  {"id": "thickeners-stabilizers", "name": "المكثفات والمثبتات", "name_en": "Thickeners & Stabilizers", "description": "مواد التكثيف والتثبيت وتكوين الجيل"},
+  {"id": "actives", "name": "الأحماض والمواد الفعالة", "name_en": "Actives & Acids", "description": "الأحماض والفيتامينات والببتيدات والمواد الفعالة"},
+  {"id": "botanical-extracts", "name": "المستخلصات النباتية", "name_en": "Botanical Extracts", "description": "مستخلصات النباتات ومشتقاتها"},
+  {"id": "preservatives", "name": "المواد الحافظة", "name_en": "Preservatives", "description": "حافظات التركيبات ومضادات أكسدتها"},
+  {"id": "solvents-ph", "name": "المذيبات وضابطات الحموضة", "name_en": "Solvents & pH", "description": "المذيبات ومنظمات pH"},
+  {"id": "colorants", "name": "الألوان والأصباغ", "name_en": "Colorants", "description": "الأصباغ والأكاسيد والميكا"},
+  {"id": "clays-exfoliants", "name": "الأطيان والمقشرات", "name_en": "Clays & Exfoliants", "description": "الأطيان ومواد التقشير الفيزيائي"},
+  {"id": "sunscreens", "name": "الفلاتر الشمسية", "name_en": "Sunscreen Filters", "description": "فلاتر الأشعة فوق البنفسجية"},
+  {"id": "fragrance-flavor", "name": "العطور والنكهات", "name_en": "Fragrance & Flavor", "description": "المركّبات العطرية والنكهات"}
 ]
