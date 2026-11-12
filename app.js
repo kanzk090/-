@@ -8,7 +8,8 @@
 
   /* 1. Config */
 
-  const WHATSAPP_NUMBER = ""; // بصيغة دولية بدون + مثال: 249912345678
+  const WHATSAPP_NUMBER = "249998607716"; // بصيغة دولية بدون + (السودان 249)
+  const PHONE = "0998607716";
 
   /* 2. Helpers */
 
@@ -60,15 +61,14 @@
     materials: [],
     currentView: "home",
     ready: false,
-    currentBranch: null,
+    currentSection: null,
     searchQuery: ""
   };
 
   const views = {
     home: "view-home",
     sections: "view-sections",
-    branches: "view-branches",
-    materials: "view-materials",
+    section: "view-materials",
     material: "view-material",
     search: "view-search",
     register: "view-register",
@@ -252,13 +252,9 @@
     const { page, id } = parseRoute();
     if (page === "material") {
       const m = findMaterial(id);
-      return m ? "materials/" + encodeURIComponent(m.branch_id) : "sections";
+      const b = m && findBranch(m.branch_id);
+      return b ? "section/" + encodeURIComponent(b.section_id) : "home";
     }
-    if (page === "materials") {
-      const b = findBranch(id);
-      return b ? "branches/" + encodeURIComponent(b.section_id) : "sections";
-    }
-    if (page === "branches") return "sections";
     if (page.startsWith("admin-")) return "admin";
     return "home";
   }
@@ -266,8 +262,8 @@
   const renderers = {
     home: renderSections,
     sections: renderSections,
-    branches: renderBranches,
-    materials: renderMaterials,
+    section: renderSection,
+    contact: renderContact,
     material: renderMaterial,
     search: renderSearch,
     subscription: renderSubscription,
@@ -298,6 +294,9 @@
     }
 
     state.currentView = page;
+    const tabOf = { home: "home", sections: "home", section: "home", material: "home",
+      search: "search", subscription: "subscription", contact: "contact" };
+    $$("#tabbar a").forEach(a => a.classList.toggle("active", a.dataset.tab === tabOf[page]));
     backButton.hidden = page === "home";
     closeMenu();
     updateMenu();
@@ -337,68 +336,77 @@
 
   /* 8. Cards */
 
-  function createCard(title, description, href) {
+  const SECTION_ICONS = {
+    "oils-fats": "🫒", "waxes-emulsifiers": "🕯️", "surfactants": "🧼",
+    "emollients-humectants": "💧", "thickeners-stabilizers": "🧪", "actives": "✨",
+    "botanical-extracts": "🌿", "preservatives": "🛡️", "solvents-ph": "⚗️",
+    "colorants": "🎨", "clays-exfoliants": "🏺", "sunscreens": "☀️",
+    "fragrance-flavor": "🌸"
+  };
+
+  function createCard(title, description, href, opts = {}) {
     const card = el("a", "card");
     card.href = href;
-    card.append(el("h3", "", title || ""), el("p", "", description || ""));
+
+    const text = el("span", "card-text");
+    text.append(el("h3", "", title || ""));
+    if (description) text.append(el("p", "", description));
+    if (opts.meta) text.append(el("small", "card-meta", opts.meta));
+
+    card.append(
+      el("span", "card-icon", opts.icon || "🔹"),
+      text,
+      el("span", "card-arrow", "‹")
+    );
     return card;
   }
 
-  /* 9. Sections */
+  const countMaterialsInBranch = id =>
+    state.materials.filter(m => String(m.branch_id) === String(id)).length;
+
+  const countMaterialsInSection = id => {
+    const ids = new Set(
+      state.branches.filter(b => String(b.section_id) === String(id)).map(b => String(b.id))
+    );
+    return state.materials.filter(m => ids.has(String(m.branch_id))).length;
+  };
+
+  /* 9. Sections (بلاطات الأقسام) */
+
+  function createTile(section) {
+    const tile = el("a", "tile");
+    tile.href = "#/section/" + encodeURIComponent(section.id);
+    const sub = el("p", "tile-sub",
+      [section.name_en, countMaterialsInSection(section.id)]
+        .filter(v => v !== undefined && v !== "").join(" · "));
+    sub.dir = "ltr";
+    tile.append(el("span", "tile-icon", SECTION_ICONS[section.id] || "🔹"),
+                el("h3", "", section.name), sub);
+    return tile;
+  }
 
   function renderSections() {
     ["#home-sections-grid", "#sections-grid"].forEach(selector => {
       const container = $(selector);
       container.replaceChildren();
-
-      state.sections.forEach(section => {
-        container.appendChild(createCard(
-          section.name,
-          section.description,
-          "#/branches/" + encodeURIComponent(section.id)
-        ));
-      });
-
+      state.sections.forEach(section => container.appendChild(createTile(section)));
       if (!state.sections.length) {
         container.appendChild(el("p", "muted", "سيتم عرض الأقسام بعد إضافة البيانات."));
       }
     });
   }
 
-  /* 10. Branches */
-
-  function renderBranches(sectionId) {
-    const section = findSection(sectionId);
-    if (!section) return "القسم غير موجود.";
-
-    const container = $("#branches-list");
-    container.replaceChildren();
-
-    $("#branches-title").textContent = section.name;
-
-    const branches = state.branches.filter(
-      b => String(b.section_id) === String(sectionId)
-    );
-
-    $("#branches-count").textContent = branches.length + " فرع";
-
-    branches.forEach(branch => {
-      container.appendChild(createCard(
-        branch.name,
-        branch.description,
-        "#/materials/" + encodeURIComponent(branch.id)
-      ));
-    });
-  }
-
-  /* 11. Materials list */
+  /* 10. مواد القسم (قسم ثم مادة مباشرة) */
 
   function updateMaterialsList() {
-    const branchId = state.currentBranch;
+    const sectionId = state.currentSection;
     const container = $("#materials-list");
     container.replaceChildren();
 
-    let items = state.materials.filter(m => String(m.branch_id) === String(branchId));
+    let items = state.materials.filter(m => {
+      const b = findBranch(m.branch_id);
+      return b && String(b.section_id) === String(sectionId);
+    });
 
     const filter = normalize($("#materials-filter").value);
     if (filter) {
@@ -412,35 +420,37 @@
     items.sort((a, b) => String(a[field] || "").localeCompare(String(b[field] || ""), locale));
 
     $("#materials-count").textContent = items.length + " مادة";
+    const showId = $("#materials-show-ids").checked;
 
     items.forEach(material => {
-      const card = createCard(
+      const branch = findBranch(material.branch_id);
+      const meta = [branch && branch.name, showId ? "ID: " + material.id : ""]
+        .filter(Boolean).join(" · ");
+      container.appendChild(createCard(
         material.name_ar,
         material.name_en,
-        "#/material/" + encodeURIComponent(material.id)
-      );
-      if ($("#materials-show-ids").checked) {
-        card.appendChild(el("small", "", "ID: " + material.id));
-      }
-      container.appendChild(card);
+        "#/material/" + encodeURIComponent(material.id),
+        { icon: SECTION_ICONS[sectionId] || "🧴", meta }
+      ));
     });
 
     if (!items.length) {
       container.appendChild(el("p", "muted",
-        filter ? "لا توجد مواد مطابقة." : "لم تُضف مواد في هذا الفرع بعد."));
+        filter ? "لا توجد مواد مطابقة." : "لم تُضف مواد في هذا القسم بعد."));
     }
   }
 
-  function renderMaterials(branchId) {
-    const branch = findBranch(branchId);
-    if (!branch) return "الفرع غير موجود.";
+  function renderSection(sectionId) {
+    const section = findSection(sectionId);
+    if (!section) return "القسم غير موجود.";
 
-    if (String(state.currentBranch) !== String(branchId)) {
+    if (String(state.currentSection) !== String(sectionId)) {
       $("#materials-filter").value = "";
     }
-    state.currentBranch = branchId;
+    state.currentSection = sectionId;
 
-    $("#materials-title").textContent = branch.name;
+    $("#materials-title").textContent =
+      (SECTION_ICONS[sectionId] ? SECTION_ICONS[sectionId] + " " : "") + section.name;
     updateMaterialsList();
   }
 
@@ -527,14 +537,15 @@
     const section = branch && findSection(branch.section_id);
     if (section) {
       const a = el("a", "", section.name);
-      a.href = "#/branches/" + encodeURIComponent(section.id);
+      a.href = "#/section/" + encodeURIComponent(section.id);
       links.appendChild(a);
     }
-    if (branch) {
-      const a = el("a", "", branch.name);
-      a.href = "#/materials/" + encodeURIComponent(branch.id);
-      links.appendChild(a);
-    }
+    if (branch) links.appendChild(el("span", "", branch.name));
+
+    $$(".m-block").forEach(b => b.classList.remove("collapsed"));
+
+    const index = $("#m-index");
+    index.replaceChildren();
 
     materialFields.forEach(field => {
       const block = $(`[data-field="${field}"]`);
@@ -547,8 +558,40 @@
         return;
       }
       renderValue(body, value, field === "references");
+
+      const chip = el("button", "chip-btn", $("h2", block).textContent);
+      chip.type = "button";
+      chip.addEventListener("click", () =>
+        block.scrollIntoView({ behavior: "smooth", block: "start" }));
+      index.appendChild(chip);
     });
+
+    // بطاقات المعلومات السريعة
+    const facts = $("#m-facts");
+    facts.replaceChildren();
+    [["CAS", material.cas, true], ["INCI", material.inci, true],
+     ["نسبة الاستخدام", material.usage_levels, false]]
+      .filter(([, v]) => !isEmpty(v))
+      .forEach(([label, value, ltr]) => {
+        const box = el("div", "fact");
+        const val = el("strong", "fact-v", String(value));
+        if (ltr) val.dir = "ltr";
+        box.append(el("span", "fact-k", label), val);
+        facts.appendChild(box);
+      });
+    facts.hidden = !facts.children.length;
   }
+
+  // طيّ وفتح أقسام الملف العلمي بالضغط على العنوان
+  $$(".m-block h2").forEach(h => {
+    h.tabIndex = 0;
+    h.setAttribute("role", "button");
+    const toggle = () => h.parentElement.classList.toggle("collapsed");
+    h.addEventListener("click", toggle);
+    h.addEventListener("keydown", e => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); }
+    });
+  });
 
   /* 13. Search */
 
@@ -677,9 +720,9 @@
     navigate("admin/material-edit");
   });
 
-  /* 17. WhatsApp */
+  /* 17. Contacts */
 
-  function setupWhatsApp() {
+  function setupContacts() {
     $$("[data-whatsapp]").forEach(link => {
       if (/^\d{8,15}$/.test(WHATSAPP_NUMBER)) {
         link.href = "https://wa.me/" + WHATSAPP_NUMBER;
@@ -690,6 +733,13 @@
         });
       }
     });
+    $$("[data-phone]").forEach(a => { a.href = "tel:" + PHONE; });
+    $$("[data-phone-text]").forEach(n => { n.textContent = PHONE; });
+  }
+
+  function renderContact() {
+    $("#contact-text").textContent =
+      "للاستفسار أو طلب الاشتراك تواصل مع الإدارة عبر واتساب أو الاتصال.";
   }
 
   /* 18. Owner photo fallback */
@@ -720,7 +770,7 @@
   $("#btn-retry").addEventListener("click", start);
 
   function init() {
-    setupWhatsApp();
+    setupContacts();
     updateMenu();
     start();
   }
