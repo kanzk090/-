@@ -62,6 +62,7 @@
     currentView: "home",
     ready: false,
     currentSection: null,
+    branchFilter: "",
     searchQuery: ""
   };
 
@@ -408,6 +409,10 @@
       return b && String(b.section_id) === String(sectionId);
     });
 
+    if (state.branchFilter) {
+      items = items.filter(m => String(m.branch_id) === String(state.branchFilter));
+    }
+
     const filter = normalize($("#materials-filter").value);
     if (filter) {
       items = items.filter(m =>
@@ -440,14 +445,49 @@
     }
   }
 
+  // أزرار تصفية حسب النوع (الفرع) داخل القسم، تظهر فقط لو فيه أكثر من نوع
+  function renderBranchChips(sectionId) {
+    const box = $("#branch-filter");
+    box.replaceChildren();
+
+    const groups = state.branches
+      .filter(b => String(b.section_id) === String(sectionId))
+      .map(b => ({ branch: b, n: countMaterialsInBranch(b.id) }))
+      .filter(g => g.n > 0);
+
+    if (groups.length < 2) {
+      state.branchFilter = "";
+      box.hidden = true;
+      return;
+    }
+
+    const add = (id, label) => {
+      const active = String(state.branchFilter) === String(id);
+      const btn = el("button", "chip-btn" + (active ? " active" : ""), label);
+      btn.type = "button";
+      btn.addEventListener("click", () => {
+        state.branchFilter = id;
+        renderBranchChips(sectionId);
+        updateMaterialsList();
+      });
+      box.appendChild(btn);
+    };
+
+    add("", "الكل (" + groups.reduce((sum, g) => sum + g.n, 0) + ")");
+    groups.forEach(g => add(g.branch.id, g.branch.name + " (" + g.n + ")"));
+    box.hidden = false;
+  }
+
   function renderSection(sectionId) {
     const section = findSection(sectionId);
     if (!section) return "القسم غير موجود.";
 
     if (String(state.currentSection) !== String(sectionId)) {
       $("#materials-filter").value = "";
+      state.branchFilter = "";
     }
     state.currentSection = sectionId;
+    renderBranchChips(sectionId);
 
     $("#materials-title").textContent =
       (SECTION_ICONS[sectionId] ? SECTION_ICONS[sectionId] + " " : "") + section.name;
