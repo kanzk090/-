@@ -243,6 +243,17 @@ h3 { font-size: 16px; }
 .card-meta { align-self: flex-start; margin-top: 4px; padding: 1px 10px; border-radius: 999px; background: var(--accent-soft); color: var(--accent-text); font-size: 11.5px; font-weight: 700; }
 .card-arrow { color: var(--primary); font-size: 28px; line-height: 1; }
 
+/* 10b. فلتر الأنواع داخل القسم */
+
+.filter-chips { display: flex; gap: 8px; overflow-x: auto; padding: 2px 0 12px; scrollbar-width: none; }
+.filter-chips::-webkit-scrollbar { display: none; }
+.chip-btn {
+  flex: 0 0 auto; min-height: 40px; padding: 0 16px; white-space: nowrap;
+  background: var(--surface); color: var(--text); border: 1.5px solid var(--border);
+  border-radius: 999px; font-size: 13.5px; font-weight: 700;
+}
+.chip-btn.active { background: var(--primary); border-color: var(--primary); color: var(--on-primary); }
+
 /* 11. Toolbar and forms */
 
 .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; margin-bottom: 14px; }
