@@ -1,387 +1,309 @@
-/* ==================================================
-   KANZAK — Main Stylesheet | Version 3.0
-   ثيم داكن افتراضي، وفاتح تلقائياً حسب إعداد الجوال
-   ================================================== */
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="كنزك KANZAK — الموسوعة العلمية لمواد التجميل">
+  <meta name="theme-color" content="#161113">
+  <meta name="color-scheme" content="dark light">
+  <title>كنزك | KANZAK — الموسوعة العلمية لمواد التجميل</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
-/* 1. Tokens */
+  <header id="app-header" class="app-header">
+    <button id="btn-back" class="icon-btn" type="button" aria-label="رجوع" hidden></button>
+    <a id="brand-link" class="brand-mini" href="#/home">كنزك <span lang="en" dir="ltr">KANZAK</span></a>
+    <button id="btn-menu" class="icon-btn" type="button" aria-label="القائمة" aria-expanded="false" aria-controls="app-menu"></button>
+  </header>
 
-:root {
-  color-scheme: dark light;
-  --bg: #161113;
-  --surface: #211A1D;
-  --surface-2: #2A2125;
-  --border: #382D32;
-  --text: #F5EFF1;
-  --muted: #A89BA0;
-  --primary: #E4678C;
-  --on-primary: #FFFFFF;
-  --accent-text: #F29AB5;
-  --accent-soft: rgba(228, 103, 140, 0.14);
-  --gold: #D9B66C;
-  --success: #3DBE8A;
-  --danger: #F0707A;
-  --warning: #E3A94A;
-  --shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
-  --shadow-lg: 0 12px 30px rgba(0, 0, 0, 0.4);
-  --c-rose: #F2799C; --c-green: #3DBE8A; --c-blue: #5AA9F0; --c-violet: #B58CF0;
-  --c-teal: #2FC4C4; --c-amber: #E3A94A; --c-gray: #9AA6B5;
-  --radius: 20px;
-  --radius-sm: 14px;
-  --transition: 0.2s ease;
-  --header-h: 56px;
-  --tabbar-h: 64px;
-  --safe-b: env(safe-area-inset-bottom, 0px);
-}
+  <nav id="app-menu" class="app-menu" aria-label="القائمة الرئيسية" hidden>
+    <a href="#/home">الرئيسية</a>
+    <a href="#/sections">الأقسام</a>
+    <a href="#/search">البحث</a>
+    <a href="#/subscription">الاشتراك</a>
+    <a href="#/contact">التواصل مع الإدارة</a>
+    <a href="#/login" data-guest-only>تسجيل الدخول</a>
+    <a href="#/admin" data-admin-only hidden>لوحة الإدارة</a>
+    <button type="button" id="btn-logout" data-user-only hidden>تسجيل الخروج</button>
+  </nav>
 
-@media (prefers-color-scheme: light) {
-  :root {
-    --bg: #FBF7F8;
-    --surface: #FFFFFF;
-    --surface-2: #F5EDEF;
-    --border: #EADFE3;
-    --text: #2B2024;
-    --muted: #7C6E74;
-    --primary: #C94872;
-    --accent-text: #B73B65;
-    --accent-soft: rgba(201, 72, 114, 0.1);
-    --gold: #A8842F;
-    --success: #21845A;
-    --danger: #C74747;
-    --warning: #C98A1F;
-    --shadow: 0 2px 10px rgba(80, 40, 55, 0.07);
-    --shadow-lg: 0 12px 30px rgba(80, 40, 55, 0.14);
-    --c-rose: #C94872; --c-green: #1E8A5E; --c-blue: #2872C4; --c-violet: #7B4FC9;
-    --c-teal: #12898C; --c-amber: #B87614; --c-gray: #6A7684;
-  }
-}
+  <main id="app-main" class="app-main">
 
-/* 2. Base */
+    <noscript><p class="state">يلزم تفعيل JavaScript لتشغيل الموسوعة.</p></noscript>
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+    <!-- حالات عامة -->
+    <div id="state-loading" class="state" role="status" aria-live="polite" hidden>
+      <div class="spinner" aria-hidden="true"></div>
+      <p>جارٍ التحميل…</p>
+    </div>
+    <div id="state-error" class="state" role="alert" hidden>
+      <p id="state-error-text">حدث خطأ أثناء تحميل المحتوى.</p>
+      <button type="button" id="btn-retry" class="btn">إعادة المحاولة</button>
+    </div>
+    <div id="state-empty" class="state" hidden>
+      <p id="state-empty-text">لا توجد نتائج.</p>
+      <a class="btn btn-outline" href="#/home">الصفحة الرئيسية</a>
+    </div>
 
-body {
-  font-family: Tahoma, "Segoe UI", Arial, sans-serif;
-  direction: rtl; text-align: right;
-  background: var(--bg); color: var(--text);
-  line-height: 1.8; min-height: 100vh;
-  display: flex; flex-direction: column;
-  padding-bottom: calc(var(--tabbar-h) + var(--safe-b));
-}
+    <!-- 1. الرئيسية -->
+    <section id="view-home" class="view" data-view="home" hidden>
+      <div class="profile">
+        <figure class="owner">
+          <img id="owner-photo" class="owner-photo" src="assets/images/owner.jpg" width="160" height="160" alt="صورة صاحب الموسوعة">
+          <figcaption>هاشم شرف</figcaption>
+        </figure>
+        <div class="profile-body">
+          <h1 class="brand-ar">كنزك <span class="brand-en" lang="en" dir="ltr">KANZAK</span></h1>
+          <p class="intro-text">أهلاً بك 🌿 مرجعك المنظّم لمواد التركيبات التجميلية. لكل مادة اسمها بالعربي والإنجليزي، وتعريفها الكامل، ونسبة استخدامها، وما يتوافق معها وما يتعارض، مع مراجعها العلمية لتبني تركيبتك بثقة.</p>
+          <div class="pills">
+            <a class="pill" href="#/contact" target="_blank" rel="noopener" data-whatsapp>💬 واتساب</a>
+            <a class="pill" href="#" data-phone dir="ltr">📞 <span data-phone-text></span></a>
+          </div>
+        </div>
+      </div>
 
-button, input, select, textarea { font: inherit; color: inherit; }
-button, a { -webkit-tap-highlight-color: transparent; }
-button { cursor: pointer; }
-a { color: var(--accent-text); text-decoration: none; }
-img { max-width: 100%; display: block; }
-[hidden] { display: none !important; }
+      <h2 class="home-title">🧪 دليل مواد التركيبات التجميلية</h2>
+      <p class="muted">اختر القسم، ثم المادة لتشاهد ملفها العلمي الكامل.</p>
 
-.sr-only {
-  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
-  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
-}
+      <form id="global-search-form" class="search-box" role="search" autocomplete="off">
+        <label for="global-search" class="sr-only">البحث الشامل</label>
+        <span class="search-ico" aria-hidden="true">🔍</span>
+        <input id="global-search" type="search" placeholder="ابحث عن مادة بالعربي أو الإنجليزي أو CAS" enterkeyhint="search">
+        <button type="submit" class="btn">بحث</button>
+      </form>
 
-h1, h2, h3 { color: var(--text); line-height: 1.5; }
-h1 { font-size: clamp(22px, 5vw, 30px); margin-bottom: 14px; }
-h2 { font-size: 19px; margin-bottom: 10px; }
-h3 { font-size: 16px; }
-.muted { color: var(--muted); font-size: 14px; }
+      <div id="home-sections-grid" class="grid grid-tiles"></div>
+    </section>
 
-/* 3. Header */
+    <!-- 2. الأقسام -->
+    <section id="view-sections" class="view" data-view="sections" hidden>
+      <h1>الأقسام</h1>
+      <div id="sections-grid" class="grid grid-sections"></div>
+    </section>
 
-.app-header {
-  background: var(--bg); border-bottom: 1px solid var(--border);
-  min-height: var(--header-h); padding: 6px 4%;
-  display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  position: sticky; top: 0; z-index: 1000;
-}
-.brand-mini { color: var(--text); font-size: 21px; font-weight: 800; }
-.brand-mini span { font-size: 11px; color: var(--accent-text); margin-inline-start: 6px; letter-spacing: 1.5px; }
+    <!-- 3. مواد القسم -->
+    <section id="view-materials" class="view" data-view="materials" hidden>
+      <div class="page-head">
+        <h1 id="materials-title"></h1>
+        <p id="materials-count" class="muted"></p>
+      </div>
+      <div id="branch-filter" class="filter-chips" aria-label="تصفية حسب النوع" hidden></div>
+      <div class="toolbar">
+        <label for="materials-filter" class="sr-only">البحث داخل الفرع</label>
+        <input id="materials-filter" type="search" placeholder="ابحث داخل هذا الفرع">
+        <label for="materials-sort" class="sr-only">الترتيب</label>
+        <select id="materials-sort">
+          <option value="ar">الاسم العربي</option>
+          <option value="en">الاسم الإنجليزي</option>
+        </select>
+        <label class="check"><input id="materials-show-ids" type="checkbox"> إظهار المعرفات</label>
+      </div>
+      <div id="materials-list" class="grid grid-materials"></div>
+    </section>
 
-.icon-btn {
-  width: 42px; height: 42px; border: 1px solid var(--border); border-radius: 12px;
-  background: var(--surface); color: var(--text); display: grid; place-items: center;
-}
-.icon-btn:active { background: var(--accent-soft); }
-#btn-menu::before { content: "☰"; font-size: 20px; }
-#btn-back::before { content: "→"; font-size: 21px; }
+    <!-- 5. الملف العلمي للمادة -->
+    <section id="view-material" class="view" data-view="material" hidden>
+      <div class="material-head">
+        <h1 id="m-name-ar"></h1>
+        <p id="m-name-en" lang="en" dir="ltr"></p>
+        <div id="m-sections-links" class="chips" aria-label="القسم والفرع"></div>
+      </div>
 
-/* 4. Menu */
+      <div id="m-facts" class="m-facts" hidden></div>
+      <p id="m-cas-note" class="muted fact-note" hidden>يجب تأكيد رقم CAS وفق تعريف المادة ومواصفات المورد.</p>
 
-.app-menu {
-  position: sticky; top: var(--header-h); z-index: 999;
-  background: var(--surface); padding: 12px 4%;
-  border-bottom: 1px solid var(--border); box-shadow: var(--shadow-lg);
-  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px;
-}
-.app-menu a, .app-menu button {
-  min-height: 46px; display: flex; align-items: center; justify-content: center;
-  padding: 0 12px; border: 0; border-radius: var(--radius-sm);
-  background: var(--surface-2); color: var(--text); font-size: 14px; font-weight: 600;
-}
-.app-menu a:active, .app-menu button:active { background: var(--primary); color: var(--on-primary); }
+      <article id="material-file" class="material-file doc">
+        <section class="m-block" data-field="chemical_name"><h2>الاسم الكيميائي</h2><div class="m-body"></div></section>
+        <section class="m-block" data-field="aliases"><h2>المرادفات والأسماء التجارية</h2><div class="m-body"></div></section>
+        <section class="m-block" data-field="definition"><h2>التعريف العلمي</h2><div class="m-body"></div></section>
+        <section class="m-block" data-field="botanical_source"><h2>المصدر النباتي</h2><div class="m-body"></div></section>
+        <section class="m-block" data-field="part_used"><h2>الجزء المستخدم</h2><div class="m-body"></div></section>
+        <section class="m-block" data-field="extraction"><h2>طريقة الاستخلاص</h2><div class="m-body"></div></section>
+        <section class="m-block" data-field="composition"><h2>التركيب الكيميائي</h2><div class="m-body"></div></section>
+        <section class="m-block" data-field="properties"><h2>الخصائص الفيزيائية والكيميائية</h2><div class="m-body"></div></section>
+        <section class="m-block" data-field="solubility"><h2>الذوبان والمذيبات</h2><div class="m-body"></div></section>
+        <section class="m-block" data-field="functions"><h2>الفوائد والاستخدامات</h2><div class="m-body"></div></section>
+        <section class="m-block" data-field="usage_levels"><h2>نسب الاستخدام وحدودها</h2><div class="m-body"></div></section>
+        <section class="m-block" data-field="ph"><h2>درجة pH وظروف القياس</h2><div class="m-body"></div></section>
+        <section class="m-block" data-field="compatibility"><h2>التوافق مع المواد الأخرى</h2><div class="m-body"></div></section>
+        <section class="m-block" data-field="incompatibility"><h2>عدم التوافق والتعارضات</h2><div class="m-body"></div></section>
+        <section class="m-block" data-field="processing"><h2>ظروف الإضافة والتصنيع</h2><div class="m-body"></div></section>
+        <section class="m-block" data-field="storage"><h2>التخزين والثبات</h2><div class="m-body"></div></section>
+        <section class="m-block" data-field="safety"><h2>التحذيرات وبيانات السلامة</h2><div class="m-body"></div></section>
+        <section class="m-block" data-field="references"><h2>المراجع العلمية</h2><div class="m-body"></div></section>
+      </article>
+    </section>
 
-/* 5. Tab bar */
+    <!-- 6. البحث -->
+    <section id="view-search" class="view" data-view="search" hidden>
+      <h1>البحث</h1>
+      <form id="search-page-form" class="search-box" role="search" autocomplete="off">
+        <label for="search-page-input" class="sr-only">البحث</label>
+        <input id="search-page-input" type="search" placeholder="الاسم العربي أو الإنجليزي أو الكيميائي أو CAS أو INCI" enterkeyhint="search">
+        <button type="submit" class="btn">بحث</button>
+      </form>
+      <p id="search-summary" class="muted" aria-live="polite"></p>
+      <ul id="search-results" class="results-list"></ul>
+    </section>
 
-.tabbar {
-  position: fixed; inset-inline: 0; bottom: 0; z-index: 1100;
-  height: calc(var(--tabbar-h) + var(--safe-b)); padding-bottom: var(--safe-b);
-  background: var(--surface); border-top: 1px solid var(--border);
-  display: grid; grid-template-columns: repeat(4, 1fr);
-}
-.tabbar a {
-  position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 2px; color: var(--muted); font-size: 11.5px; font-weight: 600; line-height: 1.3;
-}
-.tabbar .ti { font-size: 21px; filter: grayscale(1); opacity: 0.65; transition: var(--transition); }
-.tabbar a.active { color: var(--accent-text); }
-.tabbar a.active .ti { filter: none; opacity: 1; }
-.tabbar a.active::before {
-  content: ""; position: absolute; top: 0; width: 32px; height: 3px;
-  border-radius: 0 0 4px 4px; background: var(--primary);
-}
+    <!-- 7. الحسابات والاشتراكات -->
+    <section id="view-register" class="view" data-view="register" hidden>
+      <h1>إنشاء حساب</h1>
+      <form id="form-register" class="form" novalidate>
+        <label>الاسم <input name="full_name" type="text" autocomplete="name" required></label>
+        <label>رقم الهاتف <input name="phone" type="tel" dir="ltr" autocomplete="tel" required></label>
+        <label>كلمة المرور <input name="password" type="password" autocomplete="new-password" minlength="8" required></label>
+        <p class="form-error" role="alert" hidden></p>
+        <button type="submit" class="btn">إنشاء الحساب</button>
+        <a href="#/login">لدي حساب بالفعل</a>
+      </form>
+    </section>
 
-/* 6. Layout */
+    <section id="view-login" class="view" data-view="login" hidden>
+      <h1>تسجيل الدخول</h1>
+      <form id="form-login" class="form" novalidate>
+        <label>رقم الهاتف <input name="phone" type="tel" dir="ltr" autocomplete="tel" required></label>
+        <label>كلمة المرور <input name="password" type="password" autocomplete="current-password" required></label>
+        <p class="form-error" role="alert" hidden></p>
+        <button type="submit" class="btn">دخول</button>
+        <a href="#/register">إنشاء حساب جديد</a>
+      </form>
+    </section>
 
-.app-main { width: min(1100px, 92%); margin: 18px auto; flex: 1; }
-.view { animation: fadeIn 0.25s ease; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+    <section id="view-verify-phone" class="view" data-view="verify-phone" hidden>
+      <h1>التحقق من رقم الهاتف</h1>
+      <form id="form-verify" class="form" novalidate>
+        <label>رمز التحقق <input name="code" type="text" inputmode="numeric" dir="ltr" autocomplete="one-time-code" required></label>
+        <p class="form-error" role="alert" hidden></p>
+        <button type="submit" class="btn">تأكيد</button>
+        <button type="button" id="btn-resend-code" class="btn btn-outline">إعادة إرسال الرمز</button>
+      </form>
+    </section>
 
-.page-head { padding: 2px 0 12px; margin-bottom: 12px; border-bottom: 1px solid var(--border); }
-.page-head h1 { margin-bottom: 2px; }
+    <section id="view-subscription" class="view" data-view="subscription" hidden>
+      <h1>الاشتراك</h1>
+      <div id="sub-status" class="info-card" aria-live="polite">
+        <h2 id="sub-status-title"></h2>
+        <p id="sub-status-text"></p>
+        <p id="sub-remaining" class="muted"></p>
+      </div>
+      <div id="sub-trial" class="info-card" hidden>
+        <h2>التجربة المجانية</h2>
+        <p>٧ أيام مجانية، تبدأ من وقت إنشاء الحساب.</p>
+        <p id="trial-remaining"></p>
+      </div>
+      <div id="sub-trial-ended" class="info-card" hidden>
+        <h2>انتهت التجربة المجانية</h2>
+        <p>للوصول إلى المحتوى، اطلب الاشتراك الشهري.</p>
+      </div>
+      <div id="sub-request" class="info-card" hidden>
+        <h2>طلب الاشتراك الشهري</h2>
+        <p id="sub-price-text"></p>
+        <button type="button" id="btn-request-sub" class="btn">طلب الاشتراك</button>
+      </div>
+      <div id="sub-request-status" class="info-card" hidden>
+        <h2>حالة طلب الاشتراك</h2>
+        <p id="sub-request-status-text"></p>
+      </div>
+      <div id="sub-expired" class="info-card" hidden>
+        <h2>انتهى الاشتراك</h2>
+        <p>جدّد اشتراكك للمتابعة.</p>
+        <button type="button" id="btn-renew-sub" class="btn">تجديد الاشتراك</button>
+      </div>
+    </section>
 
-/* 7. Profile card (الرئيسية) */
+    <section id="view-contact" class="view" data-view="contact" hidden>
+      <h1>التواصل مع الإدارة</h1>
+      <p id="contact-text"></p>
+      <div class="contact-actions">
+        <a class="btn btn-whatsapp" href="#/contact" target="_blank" rel="noopener" data-whatsapp>💬 واتساب</a>
+        <a class="btn btn-outline" href="#" data-phone dir="ltr">📞 <span data-phone-text></span></a>
+      </div>
+    </section>
 
-.profile {
-  display: flex; align-items: flex-start; gap: 16px;
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 26px; padding: 18px; box-shadow: var(--shadow);
-}
-.owner { flex: 0 0 auto; text-align: center; }
-.owner-photo {
-  width: 112px; height: 112px; object-fit: cover; border-radius: 24px;
-  border: 3px solid var(--border); background: var(--surface-2);
-}
-.owner figcaption { margin-top: 6px; font-size: 12px; color: var(--muted); }
-.profile-body { flex: 1; min-width: 0; }
-.brand-ar { font-size: 28px; font-weight: 900; margin-bottom: 6px; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
-.brand-en { font-size: 13px; font-weight: 700; letter-spacing: 3px; color: var(--accent-text); }
-.intro-text { color: var(--muted); font-size: 14.5px; line-height: 2; margin-bottom: 12px; }
+    <!-- 8. لوحة الإدارة (الحماية الفعلية في الخادم) -->
+    <section id="view-admin" class="view" data-view="admin" hidden>
+      <h1>لوحة الإدارة</h1>
+      <div id="admin-stats" class="grid grid-stats"></div>
+      <nav class="admin-nav" aria-label="أقسام لوحة الإدارة">
+        <a href="#/admin/sections">الأقسام</a>
+        <a href="#/admin/branches">الفروع</a>
+        <a href="#/admin/materials">المواد</a>
+        <a href="#/admin/users">المستخدمون</a>
+        <a href="#/admin/trials">التجارب المجانية</a>
+        <a href="#/admin/requests">طلبات الاشتراك</a>
+        <a href="#/admin/logs">سجل العمليات</a>
+      </nav>
+    </section>
 
-.pills { display: flex; flex-wrap: wrap; gap: 8px; }
-.pill {
-  display: inline-flex; align-items: center; gap: 6px; min-height: 42px; padding: 0 18px;
-  border-radius: 999px; background: var(--accent-soft); color: var(--accent-text);
-  font-size: 15px; font-weight: 700; border: 1px solid transparent;
-}
-.pill:active { background: var(--primary); color: var(--on-primary); }
+    <section id="view-admin-sections" class="view" data-view="admin-sections" hidden>
+      <h1>إدارة الأقسام</h1>
+      <div id="admin-sections-list" class="admin-list"></div>
+    </section>
 
-.home-title { margin: 26px 0 4px; font-size: clamp(21px, 5vw, 28px); }
+    <section id="view-admin-branches" class="view" data-view="admin-branches" hidden>
+      <h1>إدارة الفروع</h1>
+      <div id="admin-branches-list" class="admin-list"></div>
+    </section>
 
-/* 8. Search */
+    <section id="view-admin-materials" class="view" data-view="admin-materials" hidden>
+      <h1>إدارة المواد</h1>
+      <div id="admin-materials-list" class="admin-list"></div>
+      <button type="button" id="btn-admin-add-material" class="btn">إضافة مادة</button>
+    </section>
 
-.search-box {
-  display: flex; align-items: center; gap: 8px;
-  background: var(--surface); border: 1.5px solid var(--border);
-  border-radius: 18px; padding: 5px 14px 5px 6px; margin: 16px 0;
-}
-.search-box:focus-within { border-color: var(--primary); }
-.search-ico { font-size: 18px; opacity: 0.8; padding-inline-start: 8px; }
-.search-box input { flex: 1; min-width: 0; border: 0 !important; outline: 0; box-shadow: none !important; background: transparent; padding: 10px 4px; font-size: 15px; min-height: 46px; }
-.search-box input::placeholder { color: var(--muted); }
-.search-box .btn { min-height: 42px; padding: 0 18px; border-radius: 12px; }
+    <section id="view-admin-material-edit" class="view" data-view="admin-material-edit" hidden>
+      <h1 id="admin-material-edit-title">إضافة وتعديل المحتوى</h1>
+      <form id="form-admin-material" class="form" novalidate></form>
+    </section>
 
-/* 9. Buttons */
+    <section id="view-admin-users" class="view" data-view="admin-users" hidden>
+      <h1>إدارة المستخدمين</h1>
+      <div id="admin-users-list" class="admin-list"></div>
+    </section>
 
-.btn {
-  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  min-height: 48px; padding: 0 24px; background: var(--primary); color: var(--on-primary);
-  border: 1.5px solid var(--primary); border-radius: 14px; font-size: 15px; font-weight: 700;
-  text-align: center; transition: var(--transition);
-}
-.btn:active { transform: scale(0.97); filter: brightness(0.92); }
-.btn-outline { background: transparent; color: var(--accent-text); border-color: var(--border); }
-.btn-outline:active { background: var(--accent-soft); filter: none; }
-.btn-whatsapp { background: #1E9B63; border-color: #1E9B63; color: #fff; }
-@media (hover: hover) { .btn:hover { filter: brightness(1.08); } }
+    <section id="view-admin-trials" class="view" data-view="admin-trials" hidden>
+      <h1>متابعة التجارب المجانية</h1>
+      <div id="admin-trials-list" class="admin-list"></div>
+    </section>
 
-.contact-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+    <section id="view-admin-requests" class="view" data-view="admin-requests" hidden>
+      <h1>طلبات الاشتراك</h1>
+      <div id="admin-requests-list" class="admin-list"></div>
+    </section>
 
-/* 10. Grids, tiles, cards */
+    <section id="view-admin-logs" class="view" data-view="admin-logs" hidden>
+      <h1>سجل العمليات والتعديلات</h1>
+      <div id="admin-logs-list" class="admin-list"></div>
+    </section>
 
-.grid { display: grid; gap: 10px; margin: 12px 0 22px; grid-template-columns: 1fr; }
-.grid-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-.grid-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  </main>
 
-.tile {
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
-  min-height: 160px; padding: 18px 10px; text-align: center;
-  background: var(--surface); border: 1px solid var(--border); border-radius: 22px;
-  color: var(--text); transition: var(--transition);
-}
-.tile:active { transform: scale(0.97); background: var(--surface-2); }
-@media (hover: hover) { .tile:hover { border-color: var(--primary); transform: translateY(-3px); } }
-.tile-icon { font-size: 44px; line-height: 1.2; margin-bottom: 4px; }
-.tile h3 { font-size: 17px; font-weight: 800; }
-.tile-sub { color: var(--muted); font-size: 13.5px; line-height: 1.4; }
+  <nav id="tabbar" class="tabbar" aria-label="التنقل السريع">
+    <a href="#/home" data-tab="home"><span class="ti" aria-hidden="true">🏠</span><span>الرئيسية</span></a>
+    <a href="#/search" data-tab="search"><span class="ti" aria-hidden="true">🔍</span><span>البحث</span></a>
+    <a href="#/subscription" data-tab="subscription"><span class="ti" aria-hidden="true">⭐</span><span>الاشتراك</span></a>
+    <a href="#/contact" data-tab="contact"><span class="ti" aria-hidden="true">💬</span><span>تواصل</span></a>
+  </nav>
 
-.card, .info-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); color: var(--text); }
-.info-card { padding: 18px; }
-.info-card h2 { margin-bottom: 8px; }
-.info-card p { margin-bottom: 10px; }
+  <div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" hidden>
+    <div class="modal-box">
+      <h2 id="modal-title"></h2>
+      <div id="modal-body"></div>
+      <div class="modal-actions">
+        <button type="button" id="modal-confirm" class="btn">تأكيد</button>
+        <button type="button" id="modal-cancel" class="btn btn-outline">إلغاء</button>
+      </div>
+    </div>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
 
-.card { display: flex; align-items: center; gap: 14px; padding: 14px 16px; min-height: 80px; transition: var(--transition); }
-.card:active { transform: scale(0.985); background: var(--surface-2); }
-@media (hover: hover) { .card:hover { border-color: var(--primary); } }
-.card-icon { flex: 0 0 50px; width: 50px; height: 50px; border-radius: 16px; display: grid; place-items: center; font-size: 25px; background: var(--accent-soft); }
-.card-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
-.card-text h3 { font-size: 16px; }
-.card-text p {
-  color: var(--muted); font-size: 13px; line-height: 1.6; direction: ltr; text-align: right;
-  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-}
-.card-meta { align-self: flex-start; margin-top: 4px; padding: 1px 10px; border-radius: 999px; background: var(--accent-soft); color: var(--accent-text); font-size: 11.5px; font-weight: 700; }
-.card-arrow { color: var(--primary); font-size: 28px; line-height: 1; }
+  <footer id="app-footer" class="app-footer">
+    <p>كنزك <span lang="en" dir="ltr">KANZAK</span> — الموسوعة العلمية لمواد التجميل</p>
+    <p class="muted">العلم أساس المعرفة، والتوثيق أساس الثقة.</p>
+  </footer>
 
-/* 10b. فلتر الأنواع داخل القسم */
-
-.filter-chips { display: flex; gap: 8px; overflow-x: auto; padding: 2px 0 12px; scrollbar-width: none; }
-.filter-chips::-webkit-scrollbar { display: none; }
-.chip-btn {
-  flex: 0 0 auto; min-height: 40px; padding: 0 16px; white-space: nowrap;
-  background: var(--surface); color: var(--text); border: 1.5px solid var(--border);
-  border-radius: 999px; font-size: 13.5px; font-weight: 700;
-}
-.chip-btn.active { background: var(--primary); border-color: var(--primary); color: var(--on-primary); }
-
-/* 11. Toolbar and forms */
-
-.toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; margin-bottom: 14px; }
-.toolbar input[type="search"] { flex: 1 1 100%; }
-.toolbar select { flex: 1 1 140px; }
-.check { display: flex; align-items: center; gap: 8px; font-size: 14px; min-height: 40px; }
-
-.form { max-width: 520px; margin: 14px auto; padding: 22px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); display: flex; flex-direction: column; gap: 16px; }
-.form label { display: flex; flex-direction: column; gap: 6px; font-weight: 600; font-size: 14px; }
-
-input:not([type="checkbox"]), select, textarea {
-  width: 100%; min-height: 48px; padding: 10px 14px; background: var(--surface-2); color: var(--text);
-  border: 1.5px solid var(--border); border-radius: 12px; outline: none; transition: var(--transition);
-}
-input:focus, select:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--accent-soft); }
-input[type="checkbox"] { accent-color: var(--primary); width: 20px; height: 20px; }
-.form-error { color: var(--danger); font-size: 13px; background: var(--accent-soft); border-radius: 10px; padding: 10px; }
-
-/* 12. Material file (صفحة واحدة بعناوين ملونة) */
-
-.material-head { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 12px; }
-.material-head h1 { margin-bottom: 2px; }
-.material-head p { color: var(--accent-text); font-size: 16px; margin-bottom: 12px; }
-.chips { display: flex; flex-wrap: wrap; gap: 8px; }
-.chips a, .chips span { display: inline-flex; align-items: center; min-height: 32px; padding: 0 14px; border: 1px solid var(--border); border-radius: 999px; color: var(--muted); font-size: 12.5px; }
-.chips a { background: var(--accent-soft); color: var(--accent-text); border-color: transparent; }
-
-.m-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 6px; }
-.fact { background: var(--surface); border: 1px solid var(--border); border-right: 4px solid var(--primary); border-radius: var(--radius-sm); padding: 10px 14px; }
-.fact-k { display: block; color: var(--muted); font-size: 12px; }
-.fact-v { display: block; font-size: 15px; font-weight: 700; line-height: 1.6; overflow-wrap: anywhere; }
-.fact-v[dir="ltr"] { text-align: left; }
-.fact-note { margin: 4px 2px 0; font-size: 12.5px; }
-
-.doc { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 4px 18px; margin-top: 12px; }
-
-.m-block { --c: var(--accent-text); padding: 18px 0; border-bottom: 1px dashed var(--border); }
-.m-block:last-child { border-bottom: 0; }
-.m-block h2 {
-  display: flex; align-items: center; gap: 8px; margin: 0 0 10px; padding: 6px 12px;
-  border-radius: 10px; border-right: 4px solid var(--c);
-  font-size: 16px; font-weight: 800; color: var(--c);
-  background: var(--surface-2);
-  background: color-mix(in srgb, var(--c) 14%, transparent);
-}
-
-.m-block[data-field="chemical_name"], .m-block[data-field="aliases"], .m-block[data-field="references"] { --c: var(--c-gray); }
-.m-block[data-field="definition"] { --c: var(--c-rose); }
-.m-block[data-field="botanical_source"], .m-block[data-field="part_used"], .m-block[data-field="extraction"] { --c: var(--c-green); }
-.m-block[data-field="composition"], .m-block[data-field="properties"], .m-block[data-field="solubility"] { --c: var(--c-blue); }
-.m-block[data-field="functions"], .m-block[data-field="usage_levels"] { --c: var(--c-violet); }
-.m-block[data-field="ph"], .m-block[data-field="compatibility"], .m-block[data-field="incompatibility"], .m-block[data-field="processing"], .m-block[data-field="storage"] { --c: var(--c-teal); }
-.m-block[data-field="safety"] { --c: var(--c-amber); }
-
-.m-body { line-height: 2; overflow-wrap: anywhere; font-size: 15.5px; }
-.m-body[dir="ltr"] { text-align: left; }
-.m-body p + p { margin-top: 8px; }
-.m-body ul, .m-body ol { padding-inline-start: 22px; margin: 2px 0; }
-.m-body li { padding-inline-start: 2px; }
-.m-body li + li { margin-top: 4px; }
-.m-body li::marker { color: var(--c); }
-
-.m-body .kv { display: grid; grid-template-columns: minmax(100px, 30%) 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-.m-body .kv dt { background: var(--surface-2); font-weight: 700; padding: 8px 12px; font-size: 14px; }
-.m-body .kv dd { background: var(--surface); padding: 8px 12px; font-size: 14.5px; }
-
-.m-block[data-field="references"] a { text-decoration: underline; overflow-wrap: anywhere; font-size: 14px; }
-
-/* 13. Results */
-
-.results-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
-.results-list li { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); }
-.results-list li a { display: block; padding: 14px 16px; font-weight: 700; min-height: 52px; color: var(--text); }
-.results-list li a:active { background: var(--surface-2); }
-#search-summary { margin: 12px 0; }
-
-/* 14. Subscription, admin */
-
-#sub-status, #sub-trial, #sub-trial-ended, #sub-request, #sub-request-status, #sub-expired { margin: 12px 0; }
-#sub-trial { border-right: 4px solid var(--success); }
-#sub-trial-ended, #sub-expired { border-right: 4px solid var(--danger); }
-#sub-request { border-right: 4px solid var(--primary); }
-
-.admin-nav { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 18px 0; }
-.admin-nav a { display: flex; align-items: center; justify-content: center; min-height: 56px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); font-weight: 700; color: var(--text); }
-.admin-list { display: flex; flex-direction: column; gap: 10px; margin: 16px 0; }
-.admin-list > * { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px; overflow-wrap: anywhere; }
-
-/* 15. Modal, toast, states, footer */
-
-.modal { position: fixed; inset: 0; z-index: 2000; background: rgba(0, 0, 0, 0.65); display: flex; align-items: center; justify-content: center; padding: 20px; }
-.modal-box { width: min(480px, 100%); max-height: 85vh; overflow-y: auto; background: var(--surface); border: 1px solid var(--border); padding: 22px; border-radius: 22px; box-shadow: var(--shadow-lg); }
-.modal-box h2 { margin-bottom: 12px; }
-.modal-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
-.modal-actions .btn { flex: 1; }
-
-.toast { position: fixed; bottom: calc(var(--tabbar-h) + var(--safe-b) + 14px); left: 50%; transform: translateX(-50%); z-index: 3000; max-width: 90%; background: var(--text); color: var(--bg); padding: 12px 20px; border-radius: 12px; box-shadow: var(--shadow-lg); text-align: center; font-size: 14px; }
-
-.state { text-align: center; padding: 32px 16px; background: var(--surface); border-radius: var(--radius); margin: 16px 0; border: 1px solid var(--border); }
-.state .btn { margin-top: 12px; }
-.spinner { width: 34px; height: 34px; border: 4px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 14px; }
-@keyframes spin { to { transform: rotate(360deg); } }
-
-.app-footer { padding: 18px 5%; text-align: center; margin-top: 24px; border-top: 1px solid var(--border); }
-.app-footer p { margin: 3px 0; font-size: 13px; color: var(--muted); }
-
-:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
-button:disabled { opacity: 0.55; cursor: not-allowed; }
-
-/* 16. Larger screens */
-
-@media (min-width: 600px) {
-  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .grid-tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .grid-stats, .admin-nav { grid-template-columns: repeat(4, 1fr); }
-  .toolbar input[type="search"] { flex: 2 1 240px; }
-}
-@media (min-width: 960px) {
-  .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .grid-tiles { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  .app-menu { grid-template-columns: repeat(6, auto); justify-content: center; }
-}
-@media (max-width: 420px) {
-  .owner-photo { width: 92px; height: 92px; border-radius: 20px; }
-  .profile { padding: 14px; gap: 12px; }
-  .m-body .kv { grid-template-columns: 1fr; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
-}
+  <script src="app.js" defer></script>
+</body>
+</html>
